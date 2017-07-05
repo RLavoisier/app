@@ -20,6 +20,8 @@ from www import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^orders/', include("order.urls")),
-    url(r'^$', views.home)
+    url(r'^api/orders/', include("order.urls")),
+    url(r'^$', views.home),
+    url(r'^orders/$', views.home),
+    url(r'^orders/(\d+)$', views.home)
 ]

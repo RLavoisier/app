@@ -1,7 +1,26 @@
+//Config Object
+var config = {
+    ORDERS_INDEX_API_URL      : "http://localhost:8000/api/orders",
+    ORDERS_SHOW_API_URL       : "http://localhost:8000/api/orders/",
+    ORDERS_SHOW_URL           : "http://localhost:8000/orders/"
+}
+
 $(document).ready(function(){
     //load the orders and diplay them in the array
     loadOrders();
+    //event for click on a order element in the list
+    $("#order_table").on("click", "tr", function(event){
+        detailLink = getDetailLinkFromClickEvent(event);
+        window.location.href = detailLink;
+    });
 });
+
+function getDetailLinkFromClickEvent(event){
+    //getting the id from the element
+    orderId = $(event.currentTarget).attr("data-id");
+    //returns the url for
+    return config.ORDERS_SHOW_URL + orderId;
+}
 
 /*
         Loading orders into the array
@@ -9,7 +28,7 @@ $(document).ready(function(){
 function loadOrders() {
     $("#order_table tbody").empty();
     $.ajax({
-        url: "http://localhost:8000/orders",
+        url: config.ORDERS_INDEX_API_URL,
         type: "GET",
         success: function (response) {
             if (response.error) {
