@@ -1,0 +1,38 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Marketplace orders</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Marketplace Orders</h1>
+
+        <h2>Order list</h2>
+
+        <div id="table_container">
+            <table class="table table-hover table-stripped" id="order_table">
+                <thead>
+                    <th>Order id</th>
+                    <th>Name</th>
+                    <th>Marketplace</th>
+                    <th>Marketplace status</th>
+                    <th>Lengow status</th>
+                    <th>Total</th>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

@@ -8,18 +8,14 @@ import json
 class HJsonResponse():
 
     def __init__(self):
-        self.jsonResponse           = {}
-        self.jsonResponse.error     = False
-        self.jsonResponse.message   = ""
-        self.jsonResponse.data      = None
-
-
+        self.response = {}
     """
         Return a Json formated response
     """
     def getResponse(self, error, message, data):
-        self.jsonResponse.error     = error
-        self.jsonResponse.message   = message
-        self.jsonResponse.data      = data
-
-        return json.dumps(self.jsonResponse)
+        self.response = {
+            'error'     : error,
+            'message'   : message,
+            'data'      : data
+        }
+        return JsonResponse(self.response, safe=False)
