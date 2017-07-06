@@ -7,14 +7,20 @@ class HProducts():
         Get or create a Product from the db
 
     """
-    def getOrCreateProductBySku(self, product):
+    def getOrCreateProductBySku(self, sku, title, category, image_url):
         try:
             # is the product already in the db ?
-            fetchedProduct = Products.objects.get(sku=product.sku)
+            fetchedProduct = Products.objects.get(sku=sku)
             # return it
             return fetchedProduct
         except:
             # if not, save and return
+            product = Products.objects.create(
+                sku=sku,
+                title=title,
+                category=category,
+                image_url=image_url
+            )
             product.save()
             return product
 
@@ -30,19 +36,12 @@ class HProducts():
         image_url   = xmlProduct.find("url_image").text
 
         # creating a new product
-        product = self.getProductsInstance(sku, title, category, image_url)
+        product = self.getOrCreateProductBySku(sku, title, category, image_url)
 
         # return the product from the DB
-        return self.getOrCreateProductBySku(product)
-
-    def getProductsInstance(self, sku, title, category, image_url):
-        product = Products.objects.create(
-                            sku=sku,
-                            title=title,
-                            category=category,
-                            image_url=image_url
-                        )
         return product
+
+
 
 
 

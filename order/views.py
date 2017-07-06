@@ -74,12 +74,11 @@ def orderDetails(request, id, format=None):
             print(jsonProduct["product"]["sku"])
 
             #Creating the Products instance
-            newProduct          = h_products.getProductsInstance(
+            dbProduct          = h_products.getOrCreateProductBySku(
                                                 jsonProduct["product"]["sku"],
                                                 jsonProduct["product"]["title"],
                                                 jsonProduct["product"]["category"],
                                                 jsonProduct["product"]["image_url"])
-            dbProduct = h_products.getOrCreateProductBySku(newProduct)
             #creating the line
             h_orderlines.recordNewOrderLine(
                             order,
