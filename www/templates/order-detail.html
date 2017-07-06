@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="page" data-page="order-detail">
+    <h1>Order detail</h1>
+
+    <ol class="breadcrumb">
+      <li><a href="/orders">Orders</a></li>
+      <li class="active">Order N°{{ order.order_id }} detail</li>
+    </ol>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Order N°{{ order.order_id }} - {{ order.order_amount }}euros <span class="pull-right">{{ order.customer_first_name }}</span>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover table-stripped">
+                <thead>
+                    <th>Sku</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                </thead>
+                <tbody>
+                    {% for orderline in order.orderlines_set.all %}
+                    <tr>
+                        <td>{{ orderline.product.sku }}</td>
+                        <td>{{ orderline.product.title }}</td>
+                        <td>{{ orderline.price_unit }}</td>
+                        <td>{{ orderline.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+     <form id="delete_form" data-id={{ order.id }}>
+            <button type="submit" class="btn btn-danger pull-right">Delete</button>
+     </form>
+</div>
+
+{% endblock %}

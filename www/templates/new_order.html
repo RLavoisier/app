@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="page" data-page="new-order">
+    <h1>New order</h1>
+
+    <ol class="breadcrumb">
+      <li><a href="/orders">Orders</a></li>
+      <li class="active">New order</li>
+    </ol>
+
+    <div id="form_container">
+        <form id="new_order_form">
+            <div class="panel panel-default">
+              <div class="panel-heading">Order Infos</div>
+              <div class="panel-body" id="order_details">
+                    <div class="form-group">
+                        <label for="OrderId">Order Id</label>
+                        <input name="order_id" type="text" class="form-control" id="OrderId" placeholder="Order Id" required>
+                    </div>
+                  <div class="form-group">
+                        <label for="marketplace">marketplace</label>
+                        <input name="marketplace" type="text" class="form-control" id="marketplace" placeholder="Marketplace" required>
+                    </div>
+                  <div class="form-group">
+                        <label for="customer_name">Customer First Name</label>
+                        <input name="customer_first_name" type="text" class="form-control" id="customer_name" placeholder="Customer Name" required>
+                    </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">Products</div>
+              <div class="panel-body">
+                  <div id="products_list">
+                      <div class="col-md-12 product">
+                            <div class="form-group col-md-4">
+                                <input name="sku" type="text" class="form-control" id="sku" placeholder="Product SKU" required>
+                            </div>
+                          <div class="form-group col-md-3">
+                                <input name="quantity" type="number" class="form-control" id="quantity" placeholder="quantity" required>
+                            </div>
+                          <div class="form-group col-md-3">
+                                <input name="price_unit" step="0.01" type="number" class="form-control" id="price" placeholder="Unit price" required>
+                            </div>
+                          <div class="col-md-1">
+                                <a class="btn btn-danger delete-btn"><span class="glyphicon glyphicon-remove"></span> remove</a>
+                            </div>
+                      </div>
+                  </div>
+                  <a class="btn btn-info btn-sm pull-right" id="new_product_btn">add new product</a>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right">Submit</button>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

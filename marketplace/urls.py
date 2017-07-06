@@ -21,7 +21,8 @@ from www import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/orders/', include("order.urls")),
-    url(r'^$', views.home),
-    url(r'^orders/$', views.home),
-    url(r'^orders/(\d+)$', views.home)
+    url(r'^$', views.index),
+    url(r'^orders/$', views.index),
+    url(r'^orders/(\d+)$', views.order),
+    url(r'^orders/new$', views.new),
 ]

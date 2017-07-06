@@ -8,49 +8,61 @@ from django.views.decorators.csrf import csrf_exempt
 from order.models import Order, OrderLines, Products
 from order.serializers import OrderSerializer, OrderLineSerializer
 from order.helpers.helper_jsonresponse import HJsonResponse
+from order.helpers.helper_orders import HOrder
+from rest_framework.decorators import api_view
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 
 """
     CRUD Operations for ORDERS
 """
 
+h_json   = HJsonResponse()
+h_order  = HOrder()
+
 @csrf_exempt
-def orders(request):
+@api_view(['POST', 'GET', 'PUT'])
+@parser_classes((FormParser, MultiPartParser, JSONParser,))
+def orders(request, format=None):
     """
         INDEX view for orders
     """
-    hjson = HJsonResponse()
 
     #Showing all orders
     if request.method == "GET":
-        orders          = Order.objects.all()
-        serializer      = OrderSerializer(orders, many=True)
-        return hjson.getResponse(False, "OK", serializer.data)
+        orders          = h_order.getSerializedAllOrders()
+        return h_json.getResponse(False, "OK", orders)
 
     #Creating an order
     elif request.method == "POST":
-        serializer = OrderSerializer(data=request.POST)
+        serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return hjson.getResponse(False, "OK", serializer.data)
-        return hjson.getResponse(True, "Error", None)
+            return h_json.getResponse(False, "OK", serializer.data)
+        return h_json.getResponse(True, serializer.errors, None)
+
+    # Not very "RESTFULLY" replacing the order list with the XML API
+    elif request.method == "PUT":
+        if(h_order.replaceOrderWithXMLData()):
+            orders = h_order.getSerializedAllOrders()
+            return h_json.getResponse(False, "OK", orders)
+        else:
+            return h_json.getResponse(True, "Error during xml parsing", None)
 
 @csrf_exempt
 def order(request, id):
     """
         Getting an order fr the current id
     """
-
-    hjson = HJsonResponse()
-
     try:
-        order = Order.objects.get(id=id)
+        order               = h_order.getOrderById(id)
+        serializedOrder     = h_order.getSerializedOrder(order)
     except:
-        return hjson.getResponse(True, "No Found", None)
+        return h_json.getResponse(True, "Not Found", None)
 
     if request.method == 'GET':
-        serializer = OrderSerializer(order)
-        return hjson.getResponse(False, "OK", serializer.data)
+        return h_json.getResponse(False, "OK", serializedOrder)
 
     elif request.method == "DELETE":
             order.delete()
-            return hjson.getResponse(False, "OK", None)
+            return h_json.getResponse(False, "OK", None)
