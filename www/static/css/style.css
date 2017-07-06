@@ -1,4 +1,4 @@
-#order_table tr{
+#order_table tbody tr{
     cursor: pointer;
 }
 

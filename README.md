@@ -3,7 +3,7 @@ Application de test marketplace.
 Permet l'affichage et la création de commande via appels REST sur une app python.
 Permet également de charger les commandes issues d'un XML
 
-## App pythons
+## Apps python
 J'ai découpé l'application en 2 apps différentes
 
 l'app "order" qui peut être appellée en REST via l'url /api/orders

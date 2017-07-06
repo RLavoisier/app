@@ -22,6 +22,34 @@ class HOrder():
     def getOrderById(self, id):
         order = Order.objects.get(id=id)
         return order
+
+    """"
+            Return a set of orders from a query
+    
+    """
+    def getOrders(self, order_id, customer_first_name, marketplace):
+        # setting up the filters
+        order_id_filter             = {} if order_id            == None else { "order_id__icontains" : order_id }
+        customer_first_name_filter  = {} if customer_first_name == None else { "customer_first_name__icontains" : customer_first_name }
+        marketplace_filter          = {} if marketplace         == None else { "marketplace__icontains" : marketplace}
+
+        # gettings the filtered results
+        orders = Order.objects\
+            .filter(**order_id_filter)\
+            .filter(**customer_first_name_filter)\
+            .filter(**marketplace_filter)
+
+        return orders
+
+    """"
+            Return a serialized set of orders from a query
+    
+    """
+    def getSerializedOrders(self, order_id, customer_first_name, marketplace):
+        orders = self.getOrders(order_id, customer_first_name, marketplace)
+        serializer = OrderSerializer(orders, many=True)
+        return serializer.data
+
     """
         gets a serialized object for all orders
     """
@@ -38,6 +66,9 @@ class HOrder():
         serializer  = OrderSerializer(order, many=True)
         return serializer.data
 
+    """
+        Returns a serialized Order object
+    """
 
     def getSerializedOrder(selfself, order):
         return OrderSerializer(order, many=True)

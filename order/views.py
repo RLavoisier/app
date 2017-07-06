@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.views.decorators.csrf import csrf_exempt
 from order.serializers import OrderSerializer
+from order.models import Order
 from order.helpers.helper_jsonresponse import HJsonResponse
 from order.helpers.helper_orders import HOrder
 from order.helpers.helper_products import HProducts
@@ -110,3 +111,14 @@ def order(request, id):
     elif request.method == "DELETE":
             order.delete()
             return h_json.getResponse(False, "OK", None)
+
+@csrf_exempt
+def search(request):
+    if request.GET:
+        # getting the params from the get request
+        order_id            = request.GET.get("order_id")
+        customer_first_name = request.GET.get("customer_first_name")
+        marketplace         = request.GET.get("marketplace")
+
+        orders = h_order.getSerializedOrders(order_id, customer_first_name, marketplace)
+        return h_json.getResponse(False, "OK", orders)

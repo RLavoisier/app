@@ -2,10 +2,12 @@
 var config = {
     ORDERS_INDEX_API_URL      : "http://localhost:8000/api/orders/",
     ORDERS_SHOW_API_URL       : "http://localhost:8000/api/orders/",
+    ORDERS_SEARCH_API_URL     : "http://localhost:8000/api/orders/search",
     ORDERS_SHOW_URL           : "http://localhost:8000/orders/",
     ORDERS_NEW_URL            : "http://localhost:8000/orders/new"
 }
 
+//Pages list
 var pages = {
     ORDERS_INDEX    : "orders-index",
     ORDER_DETAIL    : "order-detail",
@@ -78,7 +80,7 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
         loadOrders();
 
         //event for click on a order element in the list
-        $("#order_table").on("click", "tr", function (event) {
+        $("#order_table tbody").on("click", "tr", function (event) {
             detailLink = getDetailLinkFromEvent(event);
             window.location.href = detailLink;
         });
@@ -98,7 +100,6 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
         Loading orders into the array
      */
     function loadOrders() {
-        $("#order_table tbody").empty();
         $.ajax({
             url     : config.ORDERS_INDEX_API_URL,
             type    : "GET",
@@ -106,20 +107,25 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
                 if (response.error) {
                     $("#table_container").append('<div class="alert alert-danger" role="alert">Une erreur s\'est produite</div>')
                 } else {
+                    $("#order_table tbody").empty();
                     refreshOrderTable(response.data);
-                    console.log(response);
                 }
             }
         })
     }
 
+    /*
+
+            Refresh the order table with data
+     */
     function refreshOrderTable(orders){
 
         //emptying the table
         $("#order_table tbody").empty();
+        $(".alert").remove();
 
         if (orders.length === 0) {
-            $("#table_container").append('<div class="alert alert-info" role="alert">Aucune commande</div>')
+            $("#table_container").append('<div class="alert alert-info no-order" role="alert">Aucune commande</div>')
         }
         orders.forEach(function (order) {
             var newTr = $("<tr>");
@@ -134,7 +140,10 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
             $("#order_table tbody").append(newTr);
         });
     }
+    /*
 
+            Loading Orders FROM XML
+     */
     function reinitOrderFromXMLApi(){
         $.ajax({
             url         : config.ORDERS_INDEX_API_URL,
@@ -153,6 +162,33 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
                 exitLoading();
             }
         });
+    }
+
+    //event for search controls
+    $(".search-control").on("keyup", function(event){
+        searchOrder(event);
+    });
+
+    function searchOrder(event){
+
+        //getting the parameters;
+        var params = {};
+        $("#order_id_search").val() ?               params.order_id = $("#order_id_search").val() : null;
+        $("#customer_first_name_search").val() ?    params.customer_first_name = $("#customer_first_name_search").val() : null;
+        $("#marketplace_search").val() ?            params.marketplace = $("#marketplace_search").val() : null;
+
+        if(!$.isEmptyObject(params)) {
+            $.ajax({
+                url         : config.ORDERS_SEARCH_API_URL,
+                type        : "GET",
+                data        : params,
+                success: function (response) {
+                    refreshOrderTable(response.data)
+                }
+            });
+        }else{
+            loadOrders();
+        }
     }
 }
 
@@ -209,7 +245,15 @@ if($("#page").data("page") === pages.NEW_ORDER){
             $(event.currentTarget).closest(".product").remove();
         });
 
-        //submiing the new form
+        /*
+
+                    Submitting the Form
+                    2 request :
+                        Create the order then get the id back from the server
+                        Create the lines for the order
+
+
+         */
         $("#new_order_form").on("submit", function(event){
             //stop the default
             event.preventDefault();
@@ -221,13 +265,16 @@ if($("#page").data("page") === pages.NEW_ORDER){
             var products = [];
             var amount = 0;
 
+            //Getting the value of the product inputs
             $(".product").each(function(){
                var sku      = $(this).find("#sku").val();
                var quantity = $(this).find("#quantity").val();
                var price    = $(this).find("#price").val();
 
+               //getting the order amount
                amount += quantity * price;
 
+               //pushing the values of current product in the products array
                products.push({
                    product: {
                        sku          : sku,
@@ -241,6 +288,7 @@ if($("#page").data("page") === pages.NEW_ORDER){
                });
             });
 
+            //Filling the FormData Object
             formData.order_amount       = amount;
             formData.lg_order_status    = "Pending";
             formData.mp_order_status    = "Pending";
@@ -259,11 +307,15 @@ if($("#page").data("page") === pages.NEW_ORDER){
                 },
                 success     : function(response){
                     console.log(response);
+                    //Handling the orderlines
                     insertOrderLines(response, products);
                 }
             });
         });
 
+        /*
+                Insert Order Lines
+         */
         function insertOrderLines(response, products){
             var order = response.data;
             var url = config.ORDERS_SHOW_API_URL + order.id + "/add_details"
