@@ -79,11 +79,11 @@ def orderDetails(request, id, format=None):
                                                 jsonProduct["product"]["title"],
                                                 jsonProduct["product"]["category"],
                                                 jsonProduct["product"]["image_url"])
-            h_products.getOrCreateProductBySku(newProduct)
+            dbProduct = h_products.getOrCreateProductBySku(newProduct)
             #creating the line
             h_orderlines.recordNewOrderLine(
                             order,
-                            newProduct,
+                            dbProduct,
                             jsonProduct["quantity"],
                             jsonProduct["price_unit"])
 
