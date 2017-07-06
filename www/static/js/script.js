@@ -27,6 +27,25 @@ function getDetaiApilLinkFromEvent(event) {
 }
 
 /*
+        Showing a loader on top of the table
+        enterLoading
+ */
+function enterLoading(){
+    //showing the loader
+    $(".loader").fadeIn(500);
+    //disabling the button
+    $(".loading-action").toggleClass("disabled");
+}
+/*
+        Showing a loader on top of the table
+        enterLoading
+ */
+function exitLoading(){
+    $(".loader").fadeOut(500);
+    $(".loading-action").toggleClass("disabled");
+}
+
+/*
         HELPER FUNCTION TE SERIALIZE FORM TO JSON
 
  */
@@ -118,16 +137,22 @@ if($("#page").data("page") === pages.ORDERS_INDEX) {
 
     function reinitOrderFromXMLApi(){
         $.ajax({
-            url     : config.ORDERS_INDEX_API_URL,
-            type    : "PUT",
-            success : function(response){
-                refreshOrderTable(response.data)
+            url         : config.ORDERS_INDEX_API_URL,
+            type        : "PUT",
+            beforeSend  : function(){
+                enterLoading();
+            },
+            success     : function(response){
+                refreshOrderTable(response.data);
                 //hide all message on the screen
                 $(".alert").hide();
                 //success message
                 $("#table_container").append('<div class="alert alert-success" role="alert">Commandes récupérées avec succès</div>')
+            },
+            complete    : function(){
+                exitLoading();
             }
-        })
+        });
     }
 }
 
@@ -210,16 +235,15 @@ if($("#page").data("page") === pages.NEW_ORDER){
                        category     : "non",
                        image_url    : "non"
                    },
-                   order: null,
+                   order: "order",
                    quantity: quantity,
-                   price_unit: price,
+                   price_unit: price
                });
             });
 
             formData.order_amount       = amount;
             formData.lg_order_status    = "Pending";
             formData.mp_order_status    = "Pending";
-            formData.products           = [];
 
             //adding the products to the form data
 
@@ -230,15 +254,39 @@ if($("#page").data("page") === pages.NEW_ORDER){
                 data        : JSON.stringify(formData),
                 contentType : "application/json",
                 processData : false,
+                beforeSend  : function(){
+                    enterLoading();
+                },
                 success     : function(response){
+                    console.log(response);
+                    insertOrderLines(response, products);
+                }
+            });
+        });
+
+        function insertOrderLines(response, products){
+            var order = response.data;
+            var url = config.ORDERS_SHOW_API_URL + order.id + "/add_details"
+
+            newProducts = [];
+            for(var p of products){
+                p.order = order.id;
+            }
+
+            $.ajax({
+                url         : url,
+                type        : "POST",
+                data        : JSON.stringify(products),
+                contentType : "application/json",
+                processData : false,
+                success     : function(response){
+                    console.log(response);
+                },
+                complete    : function(){
+                    exitLoading();
                     window.location.href = "/orders";
                 }
             });
-
-            // for(var pair of formData.entries()){
-            //     console.log(pair[0] + ', ' + pair[1]);
-            // }
-        })
-
+        }
     })
 }

@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from django.db import models
 from django.views.decorators.csrf import csrf_exempt
-from order.models import Order, OrderLines, Products
-from order.serializers import OrderSerializer, OrderLineSerializer
+from order.serializers import OrderSerializer
 from order.helpers.helper_jsonresponse import HJsonResponse
 from order.helpers.helper_orders import HOrder
+from order.helpers.helper_products import HProducts
+from order.helpers.helper_orderlines import HOrderLines
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
+import json
 
 """
     CRUD Operations for ORDERS
@@ -24,6 +21,7 @@ h_order  = HOrder()
 @api_view(['POST', 'GET', 'PUT'])
 @parser_classes((FormParser, MultiPartParser, JSONParser,))
 def orders(request, format=None):
+
     """
         INDEX view for orders
     """
@@ -49,6 +47,52 @@ def orders(request, format=None):
         else:
             return h_json.getResponse(True, "Error during xml parsing", None)
 
+"""
+        Route for creating OrderLines
+        //TODO Error fetching
+
+"""
+@csrf_exempt
+@api_view(['POST'])
+@parser_classes((FormParser, MultiPartParser, JSONParser,))
+def orderDetails(request, id, format=None):
+    # Getting the helpers
+    h_products      = HProducts()
+    h_orderlines    = HOrderLines()
+    h_order         = HOrder()
+
+    if request.method == "POST":
+        # getting the order
+        order = h_order.getOrderById(id)
+
+        for product in request.data:
+            #creating the product
+            # converting the string to Json
+            jsonStringProduct   = str(product).replace("'", '"')
+            jsonProduct         = json.loads(jsonStringProduct)
+            print(jsonProduct["product"]["sku"])
+
+            #Creating the Products instance
+            newProduct          = h_products.getProductsInstance(
+                                                jsonProduct["product"]["sku"],
+                                                jsonProduct["product"]["title"],
+                                                jsonProduct["product"]["category"],
+                                                jsonProduct["product"]["image_url"])
+            h_products.getOrCreateProductBySku(newProduct)
+            #creating the line
+            h_orderlines.recordNewOrderLine(
+                            order,
+                            newProduct,
+                            jsonProduct["quantity"],
+                            jsonProduct["price_unit"])
+
+        return h_json.getResponse(False, "OK", None)
+
+
+"""
+        Route for order details
+
+"""
 @csrf_exempt
 def order(request, id):
     """

@@ -5,19 +5,22 @@
     <h1>Marketplace Orders</h1>
 
     <div>
-        <button id="reload_xml" class="pull-right btn btn-primary">Reinit orders from XML API</button>
+        <button id="reload_xml" class="pull-right btn btn-primary loading-action">Reinit orders from XML API</button>
         <h2>Order list</h2>
     </div>
 
         <div id="table_container">
+            <div class="loader"></div>
             <table class="table table-hover table-stripped" id="order_table">
                 <thead>
-                    <th>Order id</th>
-                    <th>Name</th>
-                    <th>Marketplace</th>
-                    <th>Marketplace status</th>
-                    <th>Lengow status</th>
-                    <th>Total</th>
+                    <tr>
+                        <th>Order id</th>
+                        <th>Name</th>
+                        <th>Marketplace</th>
+                        <th>Marketplace status</th>
+                        <th>Lengow status</th>
+                        <th>Total</th>
+                    </tr>
                 </thead>
                 <tbody>
 

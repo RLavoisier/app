@@ -1,3 +1,22 @@
 #order_table tr{
     cursor: pointer;
 }
+
+#table_container, #form_container{
+    position: relative;
+}
+
+.loader{
+    display: none;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    opacity: 0.7;
+    position: absolute;
+    background-color: white;
+    z-index: 100;
+    background-image: url("/static/img/loading.gif");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100px 100px;
+}

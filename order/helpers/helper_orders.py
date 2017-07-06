@@ -3,7 +3,7 @@ from order.serializers import OrderSerializer, OrderLineSerializer
 from order.helpers.helper_products import HProducts
 from order.helpers.helper_orderlines import HOrderLines
 import xml.etree.ElementTree as ET
-import urllib2
+from urllib.request import urlopen
 
 class HOrder():
     def __init__(self):
@@ -60,7 +60,7 @@ class HOrder():
         self.deleteAllOrders()
 
         #Reading the XML FILE from URL
-        xml     = urllib2.urlopen(self.lengowOrderApiUrl)
+        xml     = urlopen(self.lengowOrderApiUrl)
         xmlTree = ET.ElementTree(file=xml)
         root    = xmlTree.getroot()
 

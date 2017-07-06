@@ -30,15 +30,19 @@ class HProducts():
         image_url   = xmlProduct.find("url_image").text
 
         # creating a new product
-        product = Products.objects.create(
-                        sku         = sku,
-                        title       = title,
-                        category    = category,
-                        image_url   = image_url
-                    )
+        product = self.getProductsInstance(sku, title, category, image_url)
 
         # return the product from the DB
         return self.getOrCreateProductBySku(product)
+
+    def getProductsInstance(self, sku, title, category, image_url):
+        product = Products.objects.create(
+                            sku=sku,
+                            title=title,
+                            category=category,
+                            image_url=image_url
+                        )
+        return product
 
 
 
